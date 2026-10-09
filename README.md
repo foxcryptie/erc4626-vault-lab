@@ -19,6 +19,7 @@ The underlying token in tests is an unrestricted mintable mock. It is never suit
 Requirements: Git and Foundry v1.8.5.
 
 ```bash
+mkdir -p lib
 git clone --depth 1 --branch v5.6.1 https://github.com/OpenZeppelin/openzeppelin-contracts.git lib/openzeppelin-contracts
 git clone --depth 1 --branch v1.17.0 https://github.com/foundry-rs/forge-std.git lib/forge-std
 forge build
