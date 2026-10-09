@@ -1,6 +1,6 @@
 # Study guide: ERC-4626 vault
 
-Work through this before making the repository public. The vault uses OpenZeppelin's standard implementation; the custom code only adds a fixed precision offset and a donation function.
+The vault uses OpenZeppelin's standard implementation; the custom code only adds a fixed precision offset and a donation function. Use this guide to check whether you understand the share math.
 
 ## 1. Trace shares and assets
 
@@ -21,7 +21,7 @@ Explain the first-deposit inflation attack and what virtual shares/assets plus a
 
 ## 4. Make a change yourself
 
-Add a test that records `previewDeposit` before and after a donation, and checks that a later depositor receives fewer shares for the same assets. State the assumption under which the comparison is valid.
+Write a test showing that `previewMint` requires more assets after a donation for the same number of shares. Then explain why a caller should enforce a maximum asset amount when minting.
 
 ## 5. Readiness check
 

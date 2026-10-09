@@ -1,8 +1,10 @@
 # ERC-4626 Vault Lab
 
+[![Foundry CI](https://github.com/foxcryptie/erc4626-vault-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/foxcryptie/erc4626-vault-lab/actions/workflows/ci.yml)
+
 A tokenized vault built on OpenZeppelin's ERC-4626 implementation. Users deposit a six-decimal mock token and receive transferable vault shares. A separate `donateYield` function adds tokens without minting shares to simulate yield and expose the share-price math.
 
-This is a study project, not an investment strategy or an audited vault. It must not hold real funds.
+This is a reference implementation, not an investment strategy or an audited vault. Do not use it with real funds.
 
 ## Mechanics
 
@@ -27,7 +29,7 @@ forge test -vv
 ```
 
 The CI workflow runs the same commands. See [EIP-4626](https://eips.ethereum.org/EIPS/eip-4626) and the [OpenZeppelin ERC-4626 guide](https://docs.openzeppelin.com/contracts/5.x/erc4626) for the standard and inflation-attack discussion.
-Use [STUDY_GUIDE.md](STUDY_GUIDE.md) to walk through the share math and make your own change before publication.
+Use [STUDY_GUIDE.md](STUDY_GUIDE.md) to walk through the share math and design limits.
 
 ## Security and design limits
 

@@ -56,6 +56,19 @@ contract DonationYieldVaultTest is Test {
         assertGt(assets, 100_000_000);
     }
 
+    function testDonationChangesNextDepositorsPreview() public {
+        vm.prank(alice);
+        vault.deposit(100_000_000, alice);
+        uint256 beforeDonation = vault.previewDeposit(10_000_000);
+        vm.prank(donor);
+        vault.donateYield(20_000_000);
+        uint256 afterDonation = vault.previewDeposit(10_000_000);
+        assertLt(afterDonation, beforeDonation);
+        vm.prank(bob);
+        uint256 actualShares = vault.deposit(10_000_000, bob);
+        assertEq(actualShares, afterDonation);
+    }
+
     function testCannotRedeemAnotherOwnersSharesWithoutAllowance() public {
         vm.prank(alice);
         uint256 shares = vault.deposit(100_000_000, alice);
