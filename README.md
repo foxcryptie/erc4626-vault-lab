@@ -27,6 +27,7 @@ forge test -vv
 ```
 
 The CI workflow runs the same commands. See [EIP-4626](https://eips.ethereum.org/EIPS/eip-4626) and the [OpenZeppelin ERC-4626 guide](https://docs.openzeppelin.com/contracts/5.x/erc4626) for the standard and inflation-attack discussion.
+Use [STUDY_GUIDE.md](STUDY_GUIDE.md) to walk through the share math and make your own change before publication.
 
 ## Security and design limits
 
