@@ -2,23 +2,15 @@
 
 [![Foundry CI](https://github.com/foxcryptie/erc4626-vault-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/foxcryptie/erc4626-vault-lab/actions/workflows/ci.yml)
 
-A tokenized vault built on OpenZeppelin's ERC-4626 implementation. Users deposit a six-decimal mock token and receive transferable vault shares. A separate `donateYield` function adds tokens without minting shares to simulate yield and expose the share-price math.
+This lab asks one question: what happens to vault shares when assets arrive without new shares being minted?
 
-This is a reference implementation, not an investment strategy or an audited vault. Do not use it with real funds.
+[`DonationYieldVault.sol`](src/DonationYieldVault.sol) uses OpenZeppelin's ERC-4626 implementation. Its own additions are a six-decimal offset and `donateYield`, which transfers tokens into the vault without issuing shares. The function is a way to test the accounting; it is not a yield strategy.
 
-## Mechanics
+In `testDonationRaisesShareValue`, Alice deposits 100 units of the mock token, then a donor adds 20. Alice still owns the same number of shares, but those shares now represent more assets. `testDonationChangesNextDepositorsPreview` checks the other side of that change: a later depositor gets a different share quote. The tests also cover redemption, preview rounding, small deposits after a donation, and an immediate round trip that cannot create assets.
 
-- `deposit` and `mint` exchange underlying assets for shares.
-- `withdraw` and `redeem` burn shares for assets.
-- `previewDeposit`, `previewMint`, `previewWithdraw`, and `previewRedeem` estimate exact operation costs or proceeds under the current on-chain state.
-- The vault uses OpenZeppelin's virtual shares/assets and a six-decimal share offset to reduce rounding loss and first-deposit inflation risk. This is a mitigation, not a guarantee for every possible integration.
-- `donateYield` transfers assets in, increasing the value of existing shares. It does **not** earn yield.
+## Run it
 
-The underlying token in tests is an unrestricted mintable mock. It is never suitable as a real stablecoin.
-
-## Run
-
-Requirements: Git and Foundry v1.8.5.
+Install [Foundry](https://book.getfoundry.sh/getting-started/installation) and Git. The repository uses OpenZeppelin Contracts `v5.6.1` and forge-std `v1.17.0`:
 
 ```bash
 mkdir -p lib
@@ -28,22 +20,6 @@ forge build
 forge test -vv
 ```
 
-The CI workflow runs the same commands. See [EIP-4626](https://eips.ethereum.org/EIPS/eip-4626) and the [OpenZeppelin ERC-4626 guide](https://docs.openzeppelin.com/contracts/5.x/erc4626) for the standard and inflation-attack discussion.
-Use [STUDY_GUIDE.md](STUDY_GUIDE.md) to walk through the share math and design limits.
+Read [`test/DonationYieldVault.t.sol`](test/DonationYieldVault.t.sol) beside the contract. [`STUDY_GUIDE.md`](STUDY_GUIDE.md) traces the share math, and [`THREAT_MODEL.md`](THREAT_MODEL.md) records the token assumptions. The [ERC-4626 specification](https://eips.ethereum.org/EIPS/eip-4626) and [OpenZeppelin's guide](https://docs.openzeppelin.com/contracts/5.x/erc4626) explain the rounding and inflation-attack background.
 
-## Security and design limits
-
-- There is no external strategy, price oracle, harvest operation, management role, fee, or guarantee of returns.
-- A direct token transfer to the vault also changes share price. Integrators must use the relevant `preview*` method immediately before an operation and consider transaction ordering/slippage.
-- Rounding can cause a depositor to receive fewer shares than expected; integrations should enforce user-defined minimums and maximums at their own transaction boundary.
-- This assumes a conventional non-rebasing ERC-20. A pausable, blacklisting, fee-on-transfer, rebasing, or malicious token changes the risk model.
-- Shares are transferable ERC-20 tokens. Anyone holding them can redeem their share of assets.
-- The mock's unrestricted mint lets test accounts simulate deposits and donations; it is not an access-control model.
-
-## Study questions
-
-1. Why does the vault mint shares instead of recording fixed asset balances?
-2. What is the difference between `convertToShares` and `previewDeposit`?
-3. Why do `previewWithdraw` and `previewMint` round in the opposite direction from `previewDeposit` and `previewRedeem`?
-4. How does an asset donation affect the share price and later depositors?
-5. Why is this **not** a production yield vault even when tests pass?
+This is an accounting exercise with a mintable mock token. It has no strategy, oracle, fees, or external source of returns. The offset reduces some first-deposit inflation risk but does not make every deposit safe. There has been no audit; do not put real funds into it.
